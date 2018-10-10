@@ -1,0 +1,22 @@
+{
+    "name": "paysera/lib-object-wrapper",
+    "description": "Wrapper around JSON-decoded data that lets easily get structured items",
+    "autoload": {
+        "psr-4": {
+            "Paysera\\Component\\ObjectWrapper\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.0",
+        "paysera/lib-php-cs-fixer-config": "^2.0.0",
+        "friendsofphp/php-cs-fixer": "^2.2,<2.11.2"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Paysera\\Component\\ObjectWrapper\\Tests\\": "tests/"
+        }
+    }
+}
