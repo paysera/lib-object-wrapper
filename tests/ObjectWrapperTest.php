@@ -382,7 +382,8 @@ class ObjectWrapperTest extends TestCase
     public function testDoesNotAffectInput()
     {
         $innerData = (object)['b' => 'c'];
-        $data = (object)['a' => $innerData];
+        $data = new stdClass();
+        $data->a = $innerData;
         $object = new ObjectWrapper($data);
         $object->getRequiredObject('a')->getRequiredString('b');
         $this->assertSame($innerData, $data->a);
