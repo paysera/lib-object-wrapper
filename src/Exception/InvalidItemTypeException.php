@@ -12,7 +12,7 @@ class InvalidItemTypeException extends InvalidItemException
     {
         parent::__construct(
             $key,
-            sprintf('Expected %s but fot %s for key "%s"', $expectedType, $givenType, $key),
+            sprintf('Expected %s but got %s for key "%s"', $expectedType, $givenType, $key),
             $previous
         );
         $this->expectedType = $expectedType;
