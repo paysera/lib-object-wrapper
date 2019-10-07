@@ -389,6 +389,26 @@ class ObjectWrapperTest extends TestCase
         $this->assertSame($innerData, $data->a);
     }
 
+    public function testGetOriginalData()
+    {
+        $innerData = (object)['b' => 'c'];
+        $data = new stdClass();
+        $data->a = $innerData;
+        $object = new ObjectWrapper($data);
+        $originalData = $object->getOriginalData();
+        $this->assertDeepEquals($data, $originalData);
+    }
+
+    public function testGetOriginalDataAsArray()
+    {
+        $innerData = (object)['b' => 'c'];
+        $data = new stdClass();
+        $data->a = $innerData;
+        $object = new ObjectWrapper($data);
+        $originalData = $object->getDataAsArray();
+        $this->assertDeepEquals(['a' => ['b' => 'c']], $originalData);
+    }
+
     private function assertDeepEquals($expectedData, $dataWithWrappers)
     {
         $this->assertEquals($expectedData, $this->unwrap($dataWithWrappers));
