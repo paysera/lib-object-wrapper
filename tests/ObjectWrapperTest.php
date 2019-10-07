@@ -404,9 +404,27 @@ class ObjectWrapperTest extends TestCase
         $innerData = (object)['b' => 'c'];
         $data = new stdClass();
         $data->a = $innerData;
+
+        $firstArrayItem = new stdClass();
+        $firstArrayItem->a = 1;
+        $secondArrayItem = new stdClass();
+        $secondArrayItem->b = 2;
+        $thirdArrayItem = new stdClass();
+        $thirdArrayItem->c = 3;
+        $data->b = [$firstArrayItem, $secondArrayItem, $thirdArrayItem];
+
         $object = new ObjectWrapper($data);
         $originalData = $object->getDataAsArray();
-        $this->assertDeepEquals(['a' => ['b' => 'c']], $originalData);
+
+        $expectedArray = [
+            'a' => ['b' => 'c'],
+            'b' => [
+                ['a' => 1],
+                ['b' => 2],
+                ['c' => 3],
+            ],
+        ];
+        $this->assertDeepEquals($expectedArray, $originalData);
     }
 
     private function assertDeepEquals($expectedData, $dataWithWrappers)
