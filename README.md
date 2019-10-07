@@ -70,6 +70,8 @@ instance of `ObjectWrapper` will be returned;
 - `getArrayOfInt`. Returns `array`, all it's items are `int` (or it's empty);
 - `getArrayOfString`. Returns `array`, all it's items are `string` (or it's empty);
 - `getArrayOfObject`. Returns `array`, all it's items are instances of `ObjectWrapper` (or it's empty).
+- `getDataAsArray`. Returns `array`, all it's items are `array` or primitive types.
+- `getOriginalData`. Returns `stdClass`, the original data passed to constructor.
 
 ## Some things to keep in mind
 

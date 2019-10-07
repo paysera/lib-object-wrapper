@@ -14,12 +14,14 @@ use Paysera\Component\ObjectWrapper\Exception\MissingItemException;
 class ObjectWrapper implements ArrayAccess, IteratorAggregate
 {
     private $data;
+    private $originalData;
     private $path;
 
     public function __construct(stdClass $data, $path = [])
     {
         $this->path = $path;
         $this->data = clone $data;
+        $this->originalData = clone $data;
 
         $this->processData();
     }
@@ -162,6 +164,30 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
     public function getArray(string $key, array $default = []): array
     {
         return $this->getOfType($key, 'array', $default);
+    }
+
+    public function getOriginalData(): stdClass
+    {
+        return $this->originalData;
+    }
+
+    public function getDataAsArray(): array
+    {
+        return $this->getObjectWrapperAsArray($this);
+    }
+
+    private function getObjectWrapperAsArray(ObjectWrapper $objectWrapper)
+    {
+        $data = [];
+        foreach ($objectWrapper as $key => $item) {
+            if ($item instanceof ObjectWrapper) {
+                $data[$key] = $this->getObjectWrapperAsArray($item);
+                continue;
+            }
+            $data[$key] = $item;
+        }
+
+        return $data;
     }
 
     private function getRequiredOfType(string $key, string $expectedType)
