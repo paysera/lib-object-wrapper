@@ -21,7 +21,7 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
     {
         $this->path = $path;
         $this->data = clone $data;
-        $this->originalData = clone $data;
+        $this->originalData = $data;
 
         $this->processData();
     }
