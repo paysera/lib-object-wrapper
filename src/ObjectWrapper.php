@@ -184,10 +184,23 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
                 $data[$key] = $this->getObjectWrapperAsArray($item);
                 continue;
             } elseif (is_array($item)) {
-                $data[$key] = [];
-                foreach ($item as $arrayKey => $arrayItem) {
-                    $data[$key][$arrayKey] = $this->getObjectWrapperAsArray($arrayItem);
-                }
+                $data[$key] = $this->getObjectWrapperFromArray($item);
+            } else {
+                $data[$key] = $item;
+            }
+        }
+
+        return $data;
+    }
+
+    private function getObjectWrapperFromArray(array $list)
+    {
+        $data = [];
+        foreach ($list as $key => $item) {
+            if ($item instanceof ObjectWrapper) {
+                $data[$key] = $this->getObjectWrapperAsArray($item);
+            } elseif (is_array($item)) {
+                $data[$key] = $this->getObjectWrapperFromArray($item);
             } else {
                 $data[$key] = $item;
             }

@@ -411,7 +411,7 @@ class ObjectWrapperTest extends TestCase
         $secondArrayItem->b = 2;
         $thirdArrayItem = new stdClass();
         $thirdArrayItem->c = 3;
-        $data->b = [$firstArrayItem, $secondArrayItem, $thirdArrayItem];
+        $data->b = [$firstArrayItem, $secondArrayItem, $thirdArrayItem, 4];
 
         $object = new ObjectWrapper($data);
         $originalData = $object->getDataAsArray();
@@ -422,6 +422,7 @@ class ObjectWrapperTest extends TestCase
                 ['a' => 1],
                 ['b' => 2],
                 ['c' => 3],
+                4,
             ],
         ];
         $this->assertDeepEquals($expectedArray, $originalData);
