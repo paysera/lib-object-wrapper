@@ -15,9 +15,9 @@ class ObjectWrapperTest extends TestCase
     public function testOffsetExists()
     {
         $object = new ObjectWrapper((object)['a' => 'b', 'c' => ['d' => 'e']]);
-        $this->assertTrue(isset($object['a']));
-        $this->assertTrue(isset($object['c']));
-        $this->assertFalse(isset($object['d']));
+        $this->assertNotEmpty($object['a']);
+        $this->assertNotEmpty($object['c']);
+        $this->assertEmpty($object['d']);
     }
 
     public function testOffsetGet()
@@ -32,6 +32,7 @@ class ObjectWrapperTest extends TestCase
     public function testOffsetSet()
     {
         $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Modifying ObjectWrapper is not allowed');
         $object = new ObjectWrapper((object)['a' => 'b', 'c' => ['d' => 'e']]);
         $object['q'] = 'e';
     }
@@ -39,6 +40,7 @@ class ObjectWrapperTest extends TestCase
     public function testOffsetUnset()
     {
         $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Modifying ObjectWrapper is not allowed');
         $object = new ObjectWrapper((object)['a' => 'b', 'c' => ['d' => 'e']]);
         unset($object['q']);
     }
@@ -54,6 +56,7 @@ class ObjectWrapperTest extends TestCase
         $object = new ObjectWrapper((object)['a' => 'b']);
         $this->assertSame('b', $object->getRequired('a'));
         $this->expectException(MissingItemException::class);
+        $this->expectExceptionMessage('Missing required key "c"');
         $object->getRequired('c');
     }
 
@@ -61,6 +64,7 @@ class ObjectWrapperTest extends TestCase
     {
         $object = new ObjectWrapper((object)[]);
         $this->expectException(MissingItemException::class);
+        $this->expectExceptionMessage('Missing required key "a"');
         $object->getRequiredBool('a');
     }
 
@@ -68,6 +72,7 @@ class ObjectWrapperTest extends TestCase
     {
         $object = new ObjectWrapper((object)[]);
         $this->expectException(MissingItemException::class);
+        $this->expectExceptionMessage('Missing required key "a"');
         $object->getRequiredFloat('a');
     }
 
@@ -75,6 +80,7 @@ class ObjectWrapperTest extends TestCase
     {
         $object = new ObjectWrapper((object)[]);
         $this->expectException(MissingItemException::class);
+        $this->expectExceptionMessage('Missing required key "a"');
         $object->getRequiredInt('a');
     }
 
@@ -82,6 +88,7 @@ class ObjectWrapperTest extends TestCase
     {
         $object = new ObjectWrapper((object)[]);
         $this->expectException(MissingItemException::class);
+        $this->expectExceptionMessage('Missing required key "a"');
         $object->getRequiredObject('a');
     }
 
@@ -89,6 +96,7 @@ class ObjectWrapperTest extends TestCase
     {
         $object = new ObjectWrapper((object)[]);
         $this->expectException(MissingItemException::class);
+        $this->expectExceptionMessage('Missing required key "a"');
         $object->getRequiredString('a');
     }
 
@@ -97,6 +105,7 @@ class ObjectWrapperTest extends TestCase
         $object = new ObjectWrapper((object)['a' => true, 'b' => 'other type']);
         $this->assertTrue($object->getRequiredBool('a'));
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected boolean but fot string for key "b"');
         $object->getRequiredBool('b');
     }
 
@@ -106,6 +115,7 @@ class ObjectWrapperTest extends TestCase
         $this->assertSame(1.23, $object->getRequiredFloat('a'));
         $this->assertSame((float)1, $object->getRequiredFloat('b'));
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected float but fot string for key "c"');
         $object->getRequiredFloat('c');
     }
 
@@ -114,6 +124,7 @@ class ObjectWrapperTest extends TestCase
         $object = new ObjectWrapper((object)['a' => 1, 'b' => 1.23]);
         $this->assertSame(1, $object->getRequiredInt('a'));
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected integer but fot float for key "b"');
         $object->getRequiredInt('b');
     }
 
@@ -124,6 +135,7 @@ class ObjectWrapperTest extends TestCase
         $object = new ObjectWrapper((object)['a' => $data, 'b' => 'other type']);
         $this->assertDeepEquals($data, $object->getRequiredObject('a'));
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected object but fot string for key "b"');
         $object->getRequiredObject('b');
     }
 
@@ -132,6 +144,7 @@ class ObjectWrapperTest extends TestCase
         $object = new ObjectWrapper((object)['a' => 'string', 'b' => 123]);
         $this->assertSame('string', $object->getRequiredString('a'));
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected string but fot integer for key "b"');
         $object->getRequiredString('b');
     }
 
@@ -142,6 +155,7 @@ class ObjectWrapperTest extends TestCase
         $this->assertNull($object->getBool('c'));
         $this->assertTrue($object->getBool('c', true));
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected boolean but fot string for key "b"');
         $object->getRequiredBool('b');
     }
 
@@ -153,6 +167,7 @@ class ObjectWrapperTest extends TestCase
         $this->assertSame(2.34, $object->getFloat('d', 2.34));
         $this->assertSame((float)1, $object->getFloat('b'));
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected float but fot string for key "c"');
         $object->getFloat('c');
     }
 
@@ -163,6 +178,7 @@ class ObjectWrapperTest extends TestCase
         $this->assertNull($object->getInt('c'));
         $this->assertSame(2, $object->getInt('c', 2));
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected integer but fot float for key "b"');
         $object->getInt('b');
     }
 
@@ -174,6 +190,7 @@ class ObjectWrapperTest extends TestCase
         $this->assertDeepEquals($data, $object->getObject('a'));
         $this->assertNull($object->getObject('c'));
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected object but fot string for key "b"');
         $object->getObject('b');
     }
 
@@ -184,6 +201,7 @@ class ObjectWrapperTest extends TestCase
         $this->assertNull($object->getString('c'));
         $this->assertSame('default', $object->getString('c', 'default'));
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected string but fot integer for key "b"');
         $object->getString('b');
     }
 
@@ -201,6 +219,7 @@ class ObjectWrapperTest extends TestCase
     {
         $object = new ObjectWrapper((object)['a' => 'string']);
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected array but fot string for key "a"');
         $object->getArray('a');
     }
 
@@ -223,6 +242,7 @@ class ObjectWrapperTest extends TestCase
     {
         $object = new ObjectWrapper((object)['a' => 'string']);
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected array but fot string for key "a"');
         $object->getArrayOfBool('a');
     }
 
@@ -231,6 +251,7 @@ class ObjectWrapperTest extends TestCase
         $array = [false, false, 0, true];
         $object = new ObjectWrapper((object)['a' => $array]);
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected boolean but fot integer for key "a"');
         $object->getArrayOfBool('a');
     }
 
@@ -239,6 +260,7 @@ class ObjectWrapperTest extends TestCase
         $array = [false, false, null, true];
         $object = new ObjectWrapper((object)['a' => $array]);
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected boolean but fot NULL for key "a"');
         $object->getArrayOfBool('a');
     }
 
@@ -255,6 +277,7 @@ class ObjectWrapperTest extends TestCase
     {
         $object = new ObjectWrapper((object)['a' => 'string']);
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected array but fot string for key "a"');
         $object->getArrayOfFloat('a');
     }
 
@@ -263,6 +286,7 @@ class ObjectWrapperTest extends TestCase
         $array = [1.0, 2.3, false];
         $object = new ObjectWrapper((object)['a' => $array]);
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected float but fot boolean for key "a"');
         $object->getArrayOfFloat('a');
     }
 
@@ -271,6 +295,7 @@ class ObjectWrapperTest extends TestCase
         $array = [1.0, 2.0, null, 3.3];
         $object = new ObjectWrapper((object)['a' => $array]);
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected float but fot NULL for key "a"');
         $object->getArrayOfFloat('a');
     }
 
@@ -287,6 +312,7 @@ class ObjectWrapperTest extends TestCase
     {
         $object = new ObjectWrapper((object)['a' => 'string']);
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected array but fot string for key "a"');
         $object->getArrayOfInt('a');
     }
 
@@ -295,6 +321,7 @@ class ObjectWrapperTest extends TestCase
         $array = [1, 9, 2.1, 4];
         $object = new ObjectWrapper((object)['a' => $array]);
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected integer but fot float for key "a"');
         $object->getArrayOfInt('a');
     }
 
@@ -303,6 +330,7 @@ class ObjectWrapperTest extends TestCase
         $array = [1, 3, null, 5];
         $object = new ObjectWrapper((object)['a' => $array]);
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected integer but fot NULL for key "a"');
         $object->getArrayOfInt('a');
     }
 
@@ -319,6 +347,7 @@ class ObjectWrapperTest extends TestCase
     {
         $object = new ObjectWrapper((object)['a' => 1]);
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected array but fot integer for key "a"');
         $object->getArrayOfString('a');
     }
 
@@ -327,6 +356,7 @@ class ObjectWrapperTest extends TestCase
         $array = ['string', 'aaa', 4];
         $object = new ObjectWrapper((object)['a' => $array]);
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected string but fot integer for key "a"');
         $object->getArrayOfString('a');
     }
 
@@ -335,6 +365,7 @@ class ObjectWrapperTest extends TestCase
         $array = ['string', 'item', null];
         $object = new ObjectWrapper((object)['a' => $array]);
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected string but fot NULL for key "a"');
         $object->getArrayOfString('a');
     }
 
@@ -353,6 +384,7 @@ class ObjectWrapperTest extends TestCase
     {
         $object = new ObjectWrapper((object)['a' => 1]);
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected array but fot integer for key "a"');
         $object->getArrayOfObject('a');
     }
 
@@ -360,6 +392,7 @@ class ObjectWrapperTest extends TestCase
     {
         $object = new ObjectWrapper((object)['a' => 'string']);
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected array but fot string for key "a"');
         $object->getArrayOfObject('a');
     }
 
@@ -368,6 +401,7 @@ class ObjectWrapperTest extends TestCase
         $array = [(object)['a' => 'b'], (object)[0 => 0, 1 => 1], null];
         $object = new ObjectWrapper((object)['a' => $array]);
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected object but fot NULL for key "a"');
         $object->getArrayOfObject('a');
     }
 
@@ -376,6 +410,7 @@ class ObjectWrapperTest extends TestCase
         $array = [(object)['a' => 'b'], (object)[0 => 0, 1 => 1], ['a' => 'b']];
         $object = new ObjectWrapper((object)['a' => $array]);
         $this->expectException(InvalidItemTypeException::class);
+        $this->expectExceptionMessage('Expected object but fot array for key "a"');
         $object->getArrayOfObject('a');
     }
 
@@ -386,7 +421,8 @@ class ObjectWrapperTest extends TestCase
         $data->a = $innerData;
         $object = new ObjectWrapper($data);
         $object->getRequiredObject('a')->getRequiredString('b');
-        $this->assertSame($innerData, $data->a);
+        $this->assertSame('c', $innerData->b);
+        $this->assertContains('c', (array) $data->a);
     }
 
     public function testGetOriginalData()
