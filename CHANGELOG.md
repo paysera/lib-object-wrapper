@@ -4,6 +4,8 @@
 
 ### Added
 - Support for php 8.0
+
+### Removed
 - Removed (temporary) paysera/lib-php-cs-fixer-config
 
 ## 0.2.2
