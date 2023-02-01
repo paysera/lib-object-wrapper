@@ -137,10 +137,14 @@ class ObjectWrapperTest extends TestCase
 
     public function testGetBool()
     {
-        $object = new ObjectWrapper((object)['a' => true, 'b' => 'other type']);
+        $object = new ObjectWrapper((object)['a' => true, 'b' => 'other type', 'd' => '1', 'e' => 'true', 'f' => 'false', 'g' => '0']);
         $this->assertTrue($object->getBool('a'));
         $this->assertNull($object->getBool('c'));
         $this->assertTrue($object->getBool('c', true));
+        $this->assertTrue($object->getBool('d'));
+        $this->assertTrue($object->getBool('e'));
+        $this->assertFalse($object->getBool('f'));
+        $this->assertFalse($object->getBool('g'));
         $this->expectException(InvalidItemTypeException::class);
         $object->getRequiredBool('b');
     }
