@@ -244,6 +244,13 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
             throw new InvalidItemTypeException($expectedType, $givenType, $this->buildKey($key));
         }
 
+        if ($expectedType === 'boolean') {
+            $value = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+            if ($value === null) {
+                throw new InvalidItemTypeException($expectedType, $givenType, $this->buildKey($key));
+            }
+        }
+
         if ($expectedType === 'float') {
             return (float)$value;
         }
