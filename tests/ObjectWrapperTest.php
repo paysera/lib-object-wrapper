@@ -94,8 +94,11 @@ class ObjectWrapperTest extends TestCase
 
     public function testGetRequiredBool()
     {
-        $object = new ObjectWrapper((object)['a' => true, 'b' => 'other type']);
+        $object = new ObjectWrapper((object)['a' => true, 'b' => 'other type', 'c' => 'false', 'd' => '1', 'e' => 0]);
         $this->assertTrue($object->getRequiredBool('a'));
+        $this->assertFalse($object->getRequiredBool('c'));
+        $this->assertTrue($object->getRequiredBool('d'));
+        $this->assertFalse($object->getRequiredBool('e'));
         $this->expectException(InvalidItemTypeException::class);
         $object->getRequiredBool('b');
     }
@@ -228,18 +231,12 @@ class ObjectWrapperTest extends TestCase
 
     public function testGetArrayOfBoolWithDifferentItemType()
     {
-        $array = [false, false, 0, true];
+        $array = [false, 'false', 0, true, 1, 'true'];
         $object = new ObjectWrapper((object)['a' => $array]);
-        $this->expectException(InvalidItemTypeException::class);
-        $object->getArrayOfBool('a');
-    }
-
-    public function testGetArrayOfBoolWithNullItem()
-    {
-        $array = [false, false, null, true];
-        $object = new ObjectWrapper((object)['a' => $array]);
-        $this->expectException(InvalidItemTypeException::class);
-        $object->getArrayOfBool('a');
+        $this->assertSame(
+            [false, false, false, true, true, true],
+            $object->getArrayOfBool('a')
+        );
     }
 
     public function testGetArrayOfFloat()
