@@ -1,11 +1,19 @@
 # Changelog
 
+## 0.3.1
+
+### Fixed
+
+- Try to extract boolean value from non-boolean type values if expected type is a boolean.
+
 ## 0.3.0
 
 ### Added
+
 - Support for php 8.0
 
 ### Removed
+
 - Removed (temporary) paysera/lib-php-cs-fixer-config
 
 ## 0.2.2
