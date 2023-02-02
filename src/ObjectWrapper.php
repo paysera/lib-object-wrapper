@@ -102,6 +102,16 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
         return $this->getOfType($key, 'boolean', $default);
     }
 
+    public function getFilteredBool(string $key, bool $default = null)
+    {
+        $value = $this[$key];
+        if ($value === null) {
+            return $default;
+        }
+
+        return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+    }
+
     public function getRequiredFloat(string $key): float
     {
         return $this->getRequiredOfType($key, 'float');
@@ -235,10 +245,7 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
      */
     private function assertValueType($value, string $expectedType, string $key)
     {
-        $givenType = gettype($value);
-        if ($givenType === 'double') {
-            $givenType = 'float';
-        }
+        $givenType = self::getValueType($value);
 
         if ($givenType !== $expectedType && !(is_int($value) && $expectedType === 'float')) {
             throw new InvalidItemTypeException($expectedType, $givenType, $this->buildKey($key));
@@ -249,6 +256,17 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
         }
 
         return $value;
+    }
+
+    private static function getValueType($value): string
+    {
+        $givenType = gettype($value);
+        if ($givenType === 'double') {
+            // PHP's historical issue
+            $givenType = 'float';
+        }
+
+        return $givenType;
     }
 
     public function getArrayOfBool(string $key): array

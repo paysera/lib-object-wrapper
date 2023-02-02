@@ -145,6 +145,34 @@ class ObjectWrapperTest extends TestCase
         $object->getRequiredBool('b');
     }
 
+    public function testGetFilteredBool()
+    {
+        $object = new ObjectWrapper((object)[
+            'a' => true,
+            'b' => 'on',
+            'c' => '1',
+            'd' => 'yes',
+            'e' => false,
+            'f' => 'off',
+            'g' => '0',
+            'h' => 'no',
+            'i' => 'not',
+            'j' => 2,
+            'k' => null
+        ]);
+        $this->assertTrue($object->getFilteredBool('a'));
+        $this->assertTrue($object->getFilteredBool('b'));
+        $this->assertTrue($object->getFilteredBool('c'));
+        $this->assertTrue($object->getFilteredBool('d'));
+        $this->assertFalse($object->getFilteredBool('e'));
+        $this->assertFalse($object->getFilteredBool('f'));
+        $this->assertFalse($object->getFilteredBool('g'));
+        $this->assertFalse($object->getFilteredBool('h'));
+        $this->assertNull($object->getFilteredBool('i'));
+        $this->assertNull($object->getFilteredBool('j'));
+        $this->assertNull($object->getFilteredBool('k'));
+    }
+
     public function testGetFloat()
     {
         $object = new ObjectWrapper((object)['a' => 1.23, 'b' => 1, 'c' => 'other type']);
