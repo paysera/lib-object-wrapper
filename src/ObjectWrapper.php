@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Paysera\Component\ObjectWrapper;
@@ -13,11 +14,11 @@ use Paysera\Component\ObjectWrapper\Exception\MissingItemException;
 
 class ObjectWrapper implements ArrayAccess, IteratorAggregate
 {
-    private $data;
-    private $originalData;
-    private $path;
+    private stdClass $data;
+    private stdClass $originalData;
+    private array $path;
 
-    public function __construct(stdClass $data, $path = [])
+    public function __construct(stdClass $data, array $path = [])
     {
         $this->path = $path;
         $this->data = clone $data;
@@ -26,14 +27,14 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
         $this->processData();
     }
 
-    private function processData()
+    private function processData(): void
     {
         foreach ($this->data as $key => &$item) {
             $item = $this->processItem($item, [$key]);
         }
     }
 
-    private function processItem($item, array $keys)
+    private function processItem(mixed $item, array $keys): mixed
     {
         if ($item instanceof stdClass) {
             return new self($item, array_merge($this->path, $keys));
@@ -44,7 +45,7 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
         return $item;
     }
 
-    private function processArray(array $data, array $keys)
+    private function processArray(array $data, array $keys): array
     {
         foreach ($data as $i => &$item) {
             $item = $this->processItem($item, array_merge($keys, [(string)$i]));
@@ -53,32 +54,38 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
         return $data;
     }
 
-    public function offsetExists($key)
+    public function offsetExists(mixed $offset): bool
     {
-        return isset($this->data->$key);
+        return isset($this->data->$offset);
     }
 
-    public function offsetGet($key)
+    public function offsetGet(mixed $offset): mixed
     {
-        return isset($this->data->$key) ? $this->data->$key : null;
+        return $this->data->$offset ?? null;
     }
 
-    public function offsetSet($offset, $value)
-    {
-        throw new RuntimeException('Modifying ObjectWrapper is not allowed');
-    }
-
-    public function offsetUnset($offset)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         throw new RuntimeException('Modifying ObjectWrapper is not allowed');
     }
 
-    public function getIterator()
+    public function offsetUnset(mixed $offset): void
+    {
+        throw new RuntimeException('Modifying ObjectWrapper is not allowed');
+    }
+
+    public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->data);
     }
 
-    public function getRequired(string $key)
+    /**
+     * @param string $key
+     *
+     * @return mixed
+     * @throws MissingItemException
+     */
+    public function getRequired(string $key): mixed
     {
         if (!isset($this->data->$key)) {
             throw new MissingItemException($this->buildKey($key));
@@ -92,12 +99,7 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
         return $this->getRequiredOfType($key, 'boolean');
     }
 
-    /**
-     * @param string $key
-     * @param bool|null $default
-     * @return bool|null
-     */
-    public function getBool(string $key, bool $default = null)
+    public function getBool(string $key, ?bool $default = null): ?bool
     {
         return $this->getOfType($key, 'boolean', $default);
     }
@@ -107,12 +109,7 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
         return $this->getRequiredOfType($key, 'float');
     }
 
-    /**
-     * @param string $key
-     * @param float|null $default
-     * @return float|null
-     */
-    public function getFloat(string $key, float $default = null)
+    public function getFloat(string $key, ?float $default = null): ?float
     {
         return $this->getOfType($key, 'float', $default);
     }
@@ -122,26 +119,17 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
         return $this->getRequiredOfType($key, 'integer');
     }
 
-    /**
-     * @param string $key
-     * @param int|null $default
-     * @return int|null
-     */
-    public function getInt(string $key, int $default = null)
+    public function getInt(string $key, ?int $default = null): ?int
     {
         return $this->getOfType($key, 'integer', $default);
     }
 
-    public function getRequiredObject(string $key): self
+    public function getRequiredObject(string $key): mixed
     {
         return $this->getRequiredOfType($key, 'object');
     }
 
-    /**
-     * @param string $key
-     * @return ObjectWrapper|null
-     */
-    public function getObject(string $key)
+    public function getObject(string $key): ?ObjectWrapper
     {
         return $this->getOfType($key, 'object', null);
     }
@@ -151,12 +139,7 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
         return $this->getRequiredOfType($key, 'string');
     }
 
-    /**
-     * @param string $key
-     * @param string|null $default
-     * @return string|null
-     */
-    public function getString(string $key, string $default = null)
+    public function getString(string $key, ?string $default = null): ?string
     {
         return $this->getOfType($key, 'string', $default);
     }
@@ -173,18 +156,15 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
 
     public function getDataAsArray(): array
     {
-        return $this->getObjectWrapperAsArray($this);
+        return $this->recursiveToArray($this);
     }
 
-    private function getObjectWrapperAsArray(ObjectWrapper $objectWrapper)
+    private function recursiveToArray(ArrayAccess|array $inputData): array
     {
         $data = [];
-        foreach ($objectWrapper as $key => $item) {
-            if ($item instanceof ObjectWrapper) {
-                $data[$key] = $this->getObjectWrapperAsArray($item);
-                continue;
-            } elseif (is_array($item)) {
-                $data[$key] = $this->getObjectWrapperFromArray($item);
+        foreach ($inputData as $key => $item) {
+            if ($item instanceof ArrayAccess || is_array($item)) {
+                $data[$key] = $this->recursiveToArray($item);
             } else {
                 $data[$key] = $item;
             }
@@ -193,30 +173,14 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
         return $data;
     }
 
-    private function getObjectWrapperFromArray(array $list)
-    {
-        $data = [];
-        foreach ($list as $key => $item) {
-            if ($item instanceof ObjectWrapper) {
-                $data[$key] = $this->getObjectWrapperAsArray($item);
-            } elseif (is_array($item)) {
-                $data[$key] = $this->getObjectWrapperFromArray($item);
-            } else {
-                $data[$key] = $item;
-            }
-        }
-
-        return $data;
-    }
-
-    private function getRequiredOfType(string $key, string $expectedType)
+    private function getRequiredOfType(string $key, string $expectedType): mixed
     {
         $value = $this->getRequired($key);
 
         return $this->assertValueType($value, $expectedType, $key);
     }
 
-    private function getOfType(string $key, string $expectedType, $default)
+    private function getOfType(string $key, string $expectedType, $default): mixed
     {
         $value = $this[$key];
         if ($value === null) {
@@ -230,10 +194,11 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
      * @param mixed $value
      * @param string $expectedType
      * @param string $key
+     *
      * @return mixed
      * @throws InvalidItemTypeException
      */
-    private function assertValueType($value, string $expectedType, string $key)
+    private function assertValueType(mixed $value, string $expectedType, string $key): mixed
     {
         $givenType = gettype($value);
         if ($givenType === 'double') {
@@ -289,7 +254,7 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
         return $this->getArrayOfType($key, 'object');
     }
 
-    private function getArrayOfType(string $key, string $expectedType)
+    private function getArrayOfType(string $key, string $expectedType): array
     {
         $value = $this->getArray($key);
 
@@ -298,7 +263,7 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
         }, $value);
     }
 
-    private function buildKey(string $key)
+    private function buildKey(string $key): string
     {
         return implode('.', array_merge($this->path, [$key]));
     }
