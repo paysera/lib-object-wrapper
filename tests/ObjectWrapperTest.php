@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Paysera\Component\ObjectWrapper\Tests;
@@ -12,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 
 class ObjectWrapperTest extends TestCase
 {
-    public function testOffsetExists()
+    public function testOffsetExists(): void
     {
         $object = new ObjectWrapper((object)['a' => 'b', 'c' => ['d' => 'e']]);
         $this->assertTrue(isset($object['a']));
@@ -20,7 +21,7 @@ class ObjectWrapperTest extends TestCase
         $this->assertFalse(isset($object['d']));
     }
 
-    public function testOffsetGet()
+    public function testOffsetGet(): void
     {
         $object = new ObjectWrapper((object)['a' => 'b', 'c' => (object)['d' => 'e']]);
         $this->assertSame('b', $object['a']);
@@ -29,27 +30,27 @@ class ObjectWrapperTest extends TestCase
         $this->assertInstanceOf(ObjectWrapper::class, $object['c']);
     }
 
-    public function testOffsetSet()
+    public function testOffsetSet(): void
     {
         $this->expectException(RuntimeException::class);
         $object = new ObjectWrapper((object)['a' => 'b', 'c' => ['d' => 'e']]);
         $object['q'] = 'e';
     }
 
-    public function testOffsetUnset()
+    public function testOffsetUnset(): void
     {
         $this->expectException(RuntimeException::class);
         $object = new ObjectWrapper((object)['a' => 'b', 'c' => ['d' => 'e']]);
         unset($object['q']);
     }
 
-    public function testGetIterator()
+    public function testGetIterator(): void
     {
         $object = new ObjectWrapper((object)['a' => 'b', 'c' => ['d' => 'e']]);
         $this->assertSame(['a' => 'b', 'c' => ['d' => 'e']], iterator_to_array($object));
     }
 
-    public function testGetRequired()
+    public function testGetRequired(): void
     {
         $object = new ObjectWrapper((object)['a' => 'b']);
         $this->assertSame('b', $object->getRequired('a'));
@@ -57,42 +58,42 @@ class ObjectWrapperTest extends TestCase
         $object->getRequired('c');
     }
 
-    public function testGetRequiredBoolWithNoItem()
+    public function testGetRequiredBoolWithNoItem(): void
     {
         $object = new ObjectWrapper((object)[]);
         $this->expectException(MissingItemException::class);
         $object->getRequiredBool('a');
     }
 
-    public function testGetRequiredFloatWithNoItem()
+    public function testGetRequiredFloatWithNoItem(): void
     {
         $object = new ObjectWrapper((object)[]);
         $this->expectException(MissingItemException::class);
         $object->getRequiredFloat('a');
     }
 
-    public function testGetRequiredIntWithNoItem()
+    public function testGetRequiredIntWithNoItem(): void
     {
         $object = new ObjectWrapper((object)[]);
         $this->expectException(MissingItemException::class);
         $object->getRequiredInt('a');
     }
 
-    public function testGetRequiredObjectWithNoItem()
+    public function testGetRequiredObjectWithNoItem(): void
     {
         $object = new ObjectWrapper((object)[]);
         $this->expectException(MissingItemException::class);
         $object->getRequiredObject('a');
     }
 
-    public function testGetRequiredStringWithNoItem()
+    public function testGetRequiredStringWithNoItem(): void
     {
         $object = new ObjectWrapper((object)[]);
         $this->expectException(MissingItemException::class);
         $object->getRequiredString('a');
     }
 
-    public function testGetRequiredBool()
+    public function testGetRequiredBool(): void
     {
         $object = new ObjectWrapper((object)['a' => true, 'b' => 'other type', 'c' => 'false', 'd' => '1', 'e' => 0]);
         $this->assertTrue($object->getRequiredBool('a'));
@@ -103,16 +104,16 @@ class ObjectWrapperTest extends TestCase
         $object->getRequiredBool('b');
     }
 
-    public function testGetRequiredFloat()
+    public function testGetRequiredFloat(): void
     {
         $object = new ObjectWrapper((object)['a' => 1.23, 'b' => 1, 'c' => 'other type']);
         $this->assertSame(1.23, $object->getRequiredFloat('a'));
-        $this->assertSame((float)1, $object->getRequiredFloat('b'));
+        $this->assertSame(1.0, $object->getRequiredFloat('b'));
         $this->expectException(InvalidItemTypeException::class);
         $object->getRequiredFloat('c');
     }
 
-    public function testGetRequiredInt()
+    public function testGetRequiredInt(): void
     {
         $object = new ObjectWrapper((object)['a' => 1, 'b' => 1.23]);
         $this->assertSame(1, $object->getRequiredInt('a'));
@@ -120,7 +121,7 @@ class ObjectWrapperTest extends TestCase
         $object->getRequiredInt('b');
     }
 
-    public function testGetRequiredObject()
+    public function testGetRequiredObject(): void
     {
         $data = new stdClass();
         $data->a = 'a';
@@ -130,7 +131,7 @@ class ObjectWrapperTest extends TestCase
         $object->getRequiredObject('b');
     }
 
-    public function testGetRequiredString()
+    public function testGetRequiredString(): void
     {
         $object = new ObjectWrapper((object)['a' => 'string', 'b' => 123]);
         $this->assertSame('string', $object->getRequiredString('a'));
@@ -138,7 +139,7 @@ class ObjectWrapperTest extends TestCase
         $object->getRequiredString('b');
     }
 
-    public function testGetBool()
+    public function testGetBool(): void
     {
         $object = new ObjectWrapper((object)['a' => true, 'b' => 'other type']);
         $this->assertTrue($object->getBool('a'));
@@ -148,7 +149,7 @@ class ObjectWrapperTest extends TestCase
         $object->getRequiredBool('b');
     }
 
-    public function testGetFloat()
+    public function testGetFloat(): void
     {
         $object = new ObjectWrapper((object)['a' => 1.23, 'b' => 1, 'c' => 'other type']);
         $this->assertSame(1.23, $object->getFloat('a'));
@@ -159,7 +160,7 @@ class ObjectWrapperTest extends TestCase
         $object->getFloat('c');
     }
 
-    public function testGetInt()
+    public function testGetInt(): void
     {
         $object = new ObjectWrapper((object)['a' => 1, 'b' => 1.23]);
         $this->assertSame(1, $object->getInt('a'));
@@ -169,7 +170,7 @@ class ObjectWrapperTest extends TestCase
         $object->getInt('b');
     }
 
-    public function testGetObject()
+    public function testGetObject(): void
     {
         $data = new stdClass();
         $data->a = 'a';
@@ -180,7 +181,7 @@ class ObjectWrapperTest extends TestCase
         $object->getObject('b');
     }
 
-    public function testGetString()
+    public function testGetString(): void
     {
         $object = new ObjectWrapper((object)['a' => 'string', 'b' => 123]);
         $this->assertSame('string', $object->getString('a'));
@@ -190,7 +191,7 @@ class ObjectWrapperTest extends TestCase
         $object->getString('b');
     }
 
-    public function testGetArray()
+    public function testGetArray(): void
     {
         $array = [1, '2', 3.0, false, (object)['a' => 'b']];
         $object = new ObjectWrapper((object)['a' => $array, 'empty' => []]);
@@ -200,20 +201,20 @@ class ObjectWrapperTest extends TestCase
         $this->assertSame([], $object->getArray('empty', [1, 2, 3]));
     }
 
-    public function testGetArrayWithDifferentType()
+    public function testGetArrayWithDifferentType(): void
     {
         $object = new ObjectWrapper((object)['a' => 'string']);
         $this->expectException(InvalidItemTypeException::class);
         $object->getArray('a');
     }
 
-    public function testGetArrayWithNull()
+    public function testGetArrayWithNull(): void
     {
         $object = new ObjectWrapper((object)['a' => null]);
         $this->assertSame([], $object->getArray('a'));
     }
 
-    public function testGetArrayOfBool()
+    public function testGetArrayOfBool(): void
     {
         $array = [false, false, true];
         $object = new ObjectWrapper((object)['a' => $array, 'empty' => []]);
@@ -222,14 +223,14 @@ class ObjectWrapperTest extends TestCase
         $this->assertSame([], $object->getArrayOfBool('empty'));
     }
 
-    public function testGetArrayOfBoolWithDifferentType()
+    public function testGetArrayOfBoolWithDifferentType(): void
     {
         $object = new ObjectWrapper((object)['a' => 'string']);
         $this->expectException(InvalidItemTypeException::class);
         $object->getArrayOfBool('a');
     }
 
-    public function testGetArrayOfBoolWithDifferentItemType()
+    public function testGetArrayOfBoolWithDifferentItemType(): void
     {
         $array = [false, 'false', 0, true, 1, 'true'];
         $object = new ObjectWrapper((object)['a' => $array]);
@@ -239,7 +240,7 @@ class ObjectWrapperTest extends TestCase
         );
     }
 
-    public function testGetArrayOfFloat()
+    public function testGetArrayOfFloat(): void
     {
         $array = [1, 1.0, 2.3];
         $object = new ObjectWrapper((object)['a' => $array, 'empty' => []]);
@@ -248,14 +249,14 @@ class ObjectWrapperTest extends TestCase
         $this->assertSame([], $object->getArrayOfFloat('empty'));
     }
 
-    public function testGetArrayOfFloatWithDifferentType()
+    public function testGetArrayOfFloatWithDifferentType(): void
     {
         $object = new ObjectWrapper((object)['a' => 'string']);
         $this->expectException(InvalidItemTypeException::class);
         $object->getArrayOfFloat('a');
     }
 
-    public function testGetArrayOfFloatWithDifferentItemType()
+    public function testGetArrayOfFloatWithDifferentItemType(): void
     {
         $array = [1.0, 2.3, false];
         $object = new ObjectWrapper((object)['a' => $array]);
@@ -263,7 +264,7 @@ class ObjectWrapperTest extends TestCase
         $object->getArrayOfFloat('a');
     }
 
-    public function testGetArrayOfFloatWithNullItem()
+    public function testGetArrayOfFloatWithNullItem(): void
     {
         $array = [1.0, 2.0, null, 3.3];
         $object = new ObjectWrapper((object)['a' => $array]);
@@ -271,7 +272,7 @@ class ObjectWrapperTest extends TestCase
         $object->getArrayOfFloat('a');
     }
 
-    public function testGetArrayOfInt()
+    public function testGetArrayOfInt(): void
     {
         $array = [0, -10, 2211223];
         $object = new ObjectWrapper((object)['a' => $array, 'empty' => []]);
@@ -280,14 +281,14 @@ class ObjectWrapperTest extends TestCase
         $this->assertSame([], $object->getArrayOfInt('empty'));
     }
 
-    public function testGetArrayOfIntWithDifferentType()
+    public function testGetArrayOfIntWithDifferentType(): void
     {
         $object = new ObjectWrapper((object)['a' => 'string']);
         $this->expectException(InvalidItemTypeException::class);
         $object->getArrayOfInt('a');
     }
 
-    public function testGetArrayOfIntWithDifferentItemType()
+    public function testGetArrayOfIntWithDifferentItemType(): void
     {
         $array = [1, 9, 2.1, 4];
         $object = new ObjectWrapper((object)['a' => $array]);
@@ -295,7 +296,7 @@ class ObjectWrapperTest extends TestCase
         $object->getArrayOfInt('a');
     }
 
-    public function testGetArrayOfIntWithNullItem()
+    public function testGetArrayOfIntWithNullItem(): void
     {
         $array = [1, 3, null, 5];
         $object = new ObjectWrapper((object)['a' => $array]);
@@ -303,7 +304,7 @@ class ObjectWrapperTest extends TestCase
         $object->getArrayOfInt('a');
     }
 
-    public function testGetArrayOfString()
+    public function testGetArrayOfString(): void
     {
         $array = ['', '123123', 'string'];
         $object = new ObjectWrapper((object)['a' => $array, 'empty' => []]);
@@ -312,14 +313,14 @@ class ObjectWrapperTest extends TestCase
         $this->assertSame([], $object->getArrayOfString('empty'));
     }
 
-    public function testGetArrayOfStringWithDifferentType()
+    public function testGetArrayOfStringWithDifferentType(): void
     {
         $object = new ObjectWrapper((object)['a' => 1]);
         $this->expectException(InvalidItemTypeException::class);
         $object->getArrayOfString('a');
     }
 
-    public function testGetArrayOfStringWithDifferentItemType()
+    public function testGetArrayOfStringWithDifferentItemType(): void
     {
         $array = ['string', 'aaa', 4];
         $object = new ObjectWrapper((object)['a' => $array]);
@@ -327,7 +328,7 @@ class ObjectWrapperTest extends TestCase
         $object->getArrayOfString('a');
     }
 
-    public function testGetArrayOfStringWithNullItem()
+    public function testGetArrayOfStringWithNullItem(): void
     {
         $array = ['string', 'item', null];
         $object = new ObjectWrapper((object)['a' => $array]);
@@ -335,7 +336,7 @@ class ObjectWrapperTest extends TestCase
         $object->getArrayOfString('a');
     }
 
-    public function testGetArrayOfObject()
+    public function testGetArrayOfObject(): void
     {
         $structure = new stdClass();
         $jsonStructure = json_decode('{"a":"b"}');
@@ -346,21 +347,21 @@ class ObjectWrapperTest extends TestCase
         $this->assertSame([], $object->getArrayOfObject('empty'));
     }
 
-    public function testGetArrayOfObjectWithDifferentType()
+    public function testGetArrayOfObjectWithDifferentType(): void
     {
         $object = new ObjectWrapper((object)['a' => 1]);
         $this->expectException(InvalidItemTypeException::class);
         $object->getArrayOfObject('a');
     }
 
-    public function testGetArrayOfObjectWithDifferentItemType()
+    public function testGetArrayOfObjectWithDifferentItemType(): void
     {
         $object = new ObjectWrapper((object)['a' => 'string']);
         $this->expectException(InvalidItemTypeException::class);
         $object->getArrayOfObject('a');
     }
 
-    public function testGetArrayOfObjectWithNullItem()
+    public function testGetArrayOfObjectWithNullItem(): void
     {
         $array = [(object)['a' => 'b'], (object)[0 => 0, 1 => 1], null];
         $object = new ObjectWrapper((object)['a' => $array]);
@@ -368,7 +369,7 @@ class ObjectWrapperTest extends TestCase
         $object->getArrayOfObject('a');
     }
 
-    public function testGetArrayOfObjectWithAssociativeArrayItem()
+    public function testGetArrayOfObjectWithAssociativeArrayItem(): void
     {
         $array = [(object)['a' => 'b'], (object)[0 => 0, 1 => 1], ['a' => 'b']];
         $object = new ObjectWrapper((object)['a' => $array]);
@@ -376,7 +377,7 @@ class ObjectWrapperTest extends TestCase
         $object->getArrayOfObject('a');
     }
 
-    public function testDoesNotAffectInput()
+    public function testDoesNotAffectInput(): void
     {
         $innerData = (object)['b' => 'c'];
         $data = new stdClass();
@@ -386,7 +387,7 @@ class ObjectWrapperTest extends TestCase
         $this->assertSame($innerData, $data->a);
     }
 
-    public function testGetOriginalData()
+    public function testGetOriginalData(): void
     {
         $innerData = (object)['b' => 'c'];
         $data = new stdClass();
@@ -396,7 +397,7 @@ class ObjectWrapperTest extends TestCase
         $this->assertDeepEquals($data, $originalData);
     }
 
-    public function testGetOriginalDataAsArray()
+    public function testGetOriginalDataAsArray(): void
     {
         $innerData = (object)['b' => 'c'];
         $data = new stdClass();
@@ -425,12 +426,12 @@ class ObjectWrapperTest extends TestCase
         $this->assertDeepEquals($expectedArray, $originalData);
     }
 
-    private function assertDeepEquals($expectedData, $dataWithWrappers)
+    private function assertDeepEquals($expectedData, $dataWithWrappers): void
     {
         $this->assertEquals($expectedData, $this->unwrap($dataWithWrappers));
     }
 
-    private function unwrap($dataWithWrappers)
+    private function unwrap($dataWithWrappers): mixed
     {
         if ($dataWithWrappers instanceof ObjectWrapper) {
             $result = new stdClass();
