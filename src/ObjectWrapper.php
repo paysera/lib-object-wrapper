@@ -53,26 +53,28 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
         return $data;
     }
 
-    public function offsetExists($key)
+    public function offsetExists($key): bool
     {
         return isset($this->data->$key);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($key)
     {
         return isset($this->data->$key) ? $this->data->$key : null;
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         throw new RuntimeException('Modifying ObjectWrapper is not allowed');
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         throw new RuntimeException('Modifying ObjectWrapper is not allowed');
     }
 
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new ArrayIterator($this->data);
