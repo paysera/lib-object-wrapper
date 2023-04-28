@@ -10,6 +10,7 @@ use IteratorAggregate;
 use ArrayAccess;
 use Paysera\Component\ObjectWrapper\Exception\InvalidItemTypeException;
 use Paysera\Component\ObjectWrapper\Exception\MissingItemException;
+use Traversable;
 
 class ObjectWrapper implements ArrayAccess, IteratorAggregate
 {
@@ -74,8 +75,7 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
         throw new RuntimeException('Modifying ObjectWrapper is not allowed');
     }
 
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new ArrayIterator($this->data);
     }
