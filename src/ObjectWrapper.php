@@ -165,7 +165,6 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
         return $value === null ? $value : trim($value);
     }
 
-
     public function getArray(string $key, array $default = []): array
     {
         return $this->getOfType($key, 'array', $default);
