@@ -150,7 +150,7 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
 
     public function getRequiredString(string $key): string
     {
-        return $this->getRequiredOfType($key, 'string');
+        return trim($this->getRequiredOfType($key, 'string'));
     }
 
     /**
@@ -158,10 +158,13 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
      * @param string|null $default
      * @return string|null
      */
-    public function getString(string $key, string $default = null)
+    public function getString(string $key, string $default = null): ?string
     {
-        return $this->getOfType($key, 'string', $default);
+        $value = $this->getOfType($key, 'string', $default);
+
+        return $value === null ? $value : trim($value);
     }
+
 
     public function getArray(string $key, array $default = []): array
     {

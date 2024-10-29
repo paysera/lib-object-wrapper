@@ -132,8 +132,9 @@ class ObjectWrapperTest extends TestCase
 
     public function testGetRequiredString()
     {
-        $object = new ObjectWrapper((object)['a' => 'string', 'b' => 123]);
+        $object = new ObjectWrapper((object)['a' => 'string', 'b' => 123, 'c' => '  whitespace  ']);
         $this->assertSame('string', $object->getRequiredString('a'));
+        $this->assertSame('whitespace', $object->getRequiredString('c'));
         $this->expectException(InvalidItemTypeException::class);
         $object->getRequiredString('b');
     }
@@ -182,10 +183,11 @@ class ObjectWrapperTest extends TestCase
 
     public function testGetString()
     {
-        $object = new ObjectWrapper((object)['a' => 'string', 'b' => 123]);
+        $object = new ObjectWrapper((object)['a' => 'string', 'b' => 123, 'c' => '  whitespace  ']);
         $this->assertSame('string', $object->getString('a'));
-        $this->assertNull($object->getString('c'));
-        $this->assertSame('default', $object->getString('c', 'default'));
+        $this->assertSame('whitespace', $object->getRequiredString('c'));
+        $this->assertNull($object->getString('d'));
+        $this->assertSame('default', $object->getString('d', 'default'));
         $this->expectException(InvalidItemTypeException::class);
         $object->getString('b');
     }
