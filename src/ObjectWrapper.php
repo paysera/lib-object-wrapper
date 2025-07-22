@@ -59,6 +59,10 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
         return isset($this->data->$key);
     }
 
+    /**
+     * @param mixed $key
+     * @return mixed
+     */
     #[\ReturnTypeWillChange]
     public function offsetGet($key)
     {
