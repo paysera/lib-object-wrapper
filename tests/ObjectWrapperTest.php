@@ -425,7 +425,31 @@ class ObjectWrapperTest extends TestCase
         $this->assertDeepEquals($expectedArray, $originalData);
     }
 
-    public function testGetDataAsArrayWithNestedLists()
+    /**
+     * @dataProvider optionalGetterProvider
+     * @param mixed $value
+     */
+    public function testOptionalGettersAcceptAnExplicitNullDefault(string $method, $value): void
+    {
+        $object = new ObjectWrapper((object)['present' => $value]);
+
+        $this->assertSame([$value, null], [$object->$method('present', null), $object->$method('absent', null)]);
+    }
+
+    /**
+     * @return array<string, array{string, mixed}>
+     */
+    public static function optionalGetterProvider(): array
+    {
+        return [
+            'getBool' => ['getBool', true],
+            'getFloat' => ['getFloat', 1.5],
+            'getInt' => ['getInt', 7],
+            'getString' => ['getString', 'text'],
+        ];
+    }
+
+    public function testGetDataAsArrayWithNestedLists(): void
     {
         $object = new ObjectWrapper(json_decode('{"matrix":[[1,{"x":2}],[]],"rows":[{"cells":[{"v":"a"}]}]}'));
 

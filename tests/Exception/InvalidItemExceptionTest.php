@@ -15,7 +15,7 @@ class InvalidItemExceptionTest extends TestCase
      * @dataProvider exceptionProvider
      * @param array<string, mixed> $expected
      */
-    public function testExceptionDescribesTheItem(callable $createException, array $expected)
+    public function testExceptionDescribesTheItem(callable $createException, array $expected): void
     {
         $exception = $createException();
 
@@ -86,9 +86,27 @@ class InvalidItemExceptionTest extends TestCase
                     $previous
                 ),
             ],
+            'invalid item type with a null previous exception' => [
+                static function () {
+                    return new InvalidItemTypeException('string', 'integer', 'a.b', null);
+                },
+                self::expected(
+                    InvalidItemTypeException::class,
+                    'Expected string but got integer for key "a.b"',
+                    'a.b',
+                    'string',
+                    'integer'
+                ),
+            ],
             'missing item' => [
                 static function () {
                     return new MissingItemException('a.b');
+                },
+                self::expected(MissingItemException::class, 'Missing required key "a.b"', 'a.b'),
+            ],
+            'missing item with a null previous exception' => [
+                static function () {
+                    return new MissingItemException('a.b', null);
                 },
                 self::expected(MissingItemException::class, 'Missing required key "a.b"', 'a.b'),
             ],
