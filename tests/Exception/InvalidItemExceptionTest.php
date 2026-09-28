@@ -13,6 +13,7 @@ class InvalidItemExceptionTest extends TestCase
 {
     /**
      * @dataProvider exceptionProvider
+     * @param array<string, mixed> $expected
      */
     public function testExceptionDescribesTheItem(callable $createException, array $expected)
     {
@@ -28,6 +29,9 @@ class InvalidItemExceptionTest extends TestCase
         ]);
     }
 
+    /**
+     * @return array<string, array{callable, array<string, mixed>}>
+     */
     public static function exceptionProvider(): array
     {
         $previous = new RuntimeException('cause');
@@ -97,6 +101,9 @@ class InvalidItemExceptionTest extends TestCase
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private static function expected(
         string $class,
         string $message,
