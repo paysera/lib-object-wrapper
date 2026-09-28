@@ -8,7 +8,7 @@ class InvalidItemTypeException extends InvalidItemException
     private $expectedType;
     private $givenType;
 
-    public function __construct(string $expectedType, string $givenType, string $key, \Exception $previous = null)
+    public function __construct(string $expectedType, string $givenType, string $key, ?\Exception $previous = null)
     {
         parent::__construct(
             $key,

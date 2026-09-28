@@ -103,7 +103,7 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
      * @param bool|null $default
      * @return bool|null
      */
-    public function getBool(string $key, bool $default = null)
+    public function getBool(string $key, ?bool $default = null)
     {
         return $this->getOfType($key, 'boolean', $default);
     }
@@ -118,7 +118,7 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
      * @param float|null $default
      * @return float|null
      */
-    public function getFloat(string $key, float $default = null)
+    public function getFloat(string $key, ?float $default = null)
     {
         return $this->getOfType($key, 'float', $default);
     }
@@ -133,7 +133,7 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
      * @param int|null $default
      * @return int|null
      */
-    public function getInt(string $key, int $default = null)
+    public function getInt(string $key, ?int $default = null)
     {
         return $this->getOfType($key, 'integer', $default);
     }
@@ -162,7 +162,7 @@ class ObjectWrapper implements ArrayAccess, IteratorAggregate
      * @param string|null $default
      * @return string|null
      */
-    public function getString(string $key, string $default = null)
+    public function getString(string $key, ?string $default = null)
     {
         return $this->getOfType($key, 'string', $default);
     }
