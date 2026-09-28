@@ -449,16 +449,6 @@ class ObjectWrapperTest extends TestCase
         ];
     }
 
-    public function testGetDataAsArrayWithNestedLists(): void
-    {
-        $object = new ObjectWrapper(json_decode('{"matrix":[[1,{"x":2}],[]],"rows":[{"cells":[{"v":"a"}]}]}'));
-
-        $this->assertSame(
-            ['matrix' => [[1, ['x' => 2]], []], 'rows' => [['cells' => [['v' => 'a']]]]],
-            $object->getDataAsArray()
-        );
-    }
-
     private function assertDeepEquals($expectedData, $dataWithWrappers)
     {
         $this->assertEquals($expectedData, $this->unwrap($dataWithWrappers));

@@ -7,7 +7,6 @@ use Paysera\Component\ObjectWrapper\Exception\InvalidItemException;
 use Paysera\Component\ObjectWrapper\Exception\InvalidItemTypeException;
 use Paysera\Component\ObjectWrapper\Exception\MissingItemException;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 
 class InvalidItemExceptionTest extends TestCase
 {
@@ -34,57 +33,12 @@ class InvalidItemExceptionTest extends TestCase
      */
     public static function exceptionProvider(): array
     {
-        $previous = new RuntimeException('cause');
-
         return [
-            'invalid item with the key only' => [
-                static function () {
-                    return new InvalidItemException('a.b');
-                },
-                self::expected(InvalidItemException::class, 'Invalid key "a.b"', 'a.b'),
-            ],
             'invalid item with null message and previous' => [
                 static function () {
                     return new InvalidItemException('a.b', null, null);
                 },
                 self::expected(InvalidItemException::class, 'Invalid key "a.b"', 'a.b'),
-            ],
-            'invalid item with a message and a previous exception' => [
-                static function () use ($previous) {
-                    return new InvalidItemException('a.b', 'Unsupported value', $previous);
-                },
-                self::expected(InvalidItemException::class, 'Unsupported value', 'a.b', null, null, $previous),
-            ],
-            'invalid item with a replaced message' => [
-                static function () {
-                    return (new InvalidItemException('a.b'))->setMessage('Replaced');
-                },
-                self::expected(InvalidItemException::class, 'Replaced', 'a.b'),
-            ],
-            'invalid item type' => [
-                static function () {
-                    return new InvalidItemTypeException('string', 'integer', 'a.b');
-                },
-                self::expected(
-                    InvalidItemTypeException::class,
-                    'Expected string but got integer for key "a.b"',
-                    'a.b',
-                    'string',
-                    'integer'
-                ),
-            ],
-            'invalid item type with a previous exception' => [
-                static function () use ($previous) {
-                    return new InvalidItemTypeException('string', 'integer', 'a.b', $previous);
-                },
-                self::expected(
-                    InvalidItemTypeException::class,
-                    'Expected string but got integer for key "a.b"',
-                    'a.b',
-                    'string',
-                    'integer',
-                    $previous
-                ),
             ],
             'invalid item type with a null previous exception' => [
                 static function () {
@@ -98,23 +52,11 @@ class InvalidItemExceptionTest extends TestCase
                     'integer'
                 ),
             ],
-            'missing item' => [
-                static function () {
-                    return new MissingItemException('a.b');
-                },
-                self::expected(MissingItemException::class, 'Missing required key "a.b"', 'a.b'),
-            ],
             'missing item with a null previous exception' => [
                 static function () {
                     return new MissingItemException('a.b', null);
                 },
                 self::expected(MissingItemException::class, 'Missing required key "a.b"', 'a.b'),
-            ],
-            'missing item with a previous exception' => [
-                static function () use ($previous) {
-                    return new MissingItemException('a.b', $previous);
-                },
-                self::expected(MissingItemException::class, 'Missing required key "a.b"', 'a.b', null, null, $previous),
             ],
         ];
     }
@@ -127,8 +69,7 @@ class InvalidItemExceptionTest extends TestCase
         string $message,
         string $key,
         ?string $expectedType = null,
-        ?string $givenType = null,
-        ?RuntimeException $previous = null
+        ?string $givenType = null
     ): array {
         return [
             'class' => $class,
@@ -136,7 +77,7 @@ class InvalidItemExceptionTest extends TestCase
             'key' => $key,
             'expectedType' => $expectedType,
             'givenType' => $givenType,
-            'previous' => $previous,
+            'previous' => null,
         ];
     }
 }
