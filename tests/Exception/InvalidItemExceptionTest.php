@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Paysera\Component\ObjectWrapper\Tests\Exception;
 
+use Exception;
 use Paysera\Component\ObjectWrapper\Exception\InvalidItemException;
 use Paysera\Component\ObjectWrapper\Exception\InvalidItemTypeException;
 use Paysera\Component\ObjectWrapper\Exception\MissingItemException;
@@ -33,6 +34,8 @@ class InvalidItemExceptionTest extends TestCase
      */
     public static function exceptionProvider(): array
     {
+        $previous = new Exception('x');
+
         return [
             'invalid item with null message and previous' => [
                 static function () {
@@ -58,6 +61,37 @@ class InvalidItemExceptionTest extends TestCase
                 },
                 self::expected(MissingItemException::class, 'Missing required key "a.b"', 'a.b'),
             ],
+            'invalid item with a custom message' => [
+                static function () {
+                    return new InvalidItemException('a.b', 'Custom message');
+                },
+                self::expected(InvalidItemException::class, 'Custom message', 'a.b'),
+            ],
+            'invalid item with a previous exception' => [
+                static function () use ($previous) {
+                    return new InvalidItemException('a.b', null, $previous);
+                },
+                self::expected(InvalidItemException::class, 'Invalid key "a.b"', 'a.b', null, null, $previous),
+            ],
+            'invalid item type with a previous exception' => [
+                static function () use ($previous) {
+                    return new InvalidItemTypeException('string', 'integer', 'a.b', $previous);
+                },
+                self::expected(
+                    InvalidItemTypeException::class,
+                    'Expected string but got integer for key "a.b"',
+                    'a.b',
+                    'string',
+                    'integer',
+                    $previous
+                ),
+            ],
+            'missing item with a previous exception' => [
+                static function () use ($previous) {
+                    return new MissingItemException('a.b', $previous);
+                },
+                self::expected(MissingItemException::class, 'Missing required key "a.b"', 'a.b', null, null, $previous),
+            ],
         ];
     }
 
@@ -69,7 +103,8 @@ class InvalidItemExceptionTest extends TestCase
         string $message,
         string $key,
         ?string $expectedType = null,
-        ?string $givenType = null
+        ?string $givenType = null,
+        ?Exception $previous = null
     ): array {
         return [
             'class' => $class,
@@ -77,7 +112,7 @@ class InvalidItemExceptionTest extends TestCase
             'key' => $key,
             'expectedType' => $expectedType,
             'givenType' => $givenType,
-            'previous' => null,
+            'previous' => $previous,
         ];
     }
 }
