@@ -3,12 +3,14 @@ declare(strict_types=1);
 
 namespace Paysera\Component\ObjectWrapper\Exception;
 
+use Exception;
+
 class InvalidItemTypeException extends InvalidItemException
 {
     private $expectedType;
     private $givenType;
 
-    public function __construct(string $expectedType, string $givenType, string $key, \Exception $previous = null)
+    public function __construct(string $expectedType, string $givenType, string $key, ?Exception $previous = null)
     {
         parent::__construct(
             $key,

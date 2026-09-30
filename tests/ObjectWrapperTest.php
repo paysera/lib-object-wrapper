@@ -425,6 +425,30 @@ class ObjectWrapperTest extends TestCase
         $this->assertDeepEquals($expectedArray, $originalData);
     }
 
+    /**
+     * @dataProvider optionalGetterProvider
+     * @param mixed $value
+     */
+    public function testOptionalGettersAcceptAnExplicitNullDefault(string $method, $value): void
+    {
+        $object = new ObjectWrapper((object)['present' => $value]);
+
+        $this->assertSame([$value, null], [$object->$method('present', null), $object->$method('absent', null)]);
+    }
+
+    /**
+     * @return array<string, array{string, mixed}>
+     */
+    public static function optionalGetterProvider(): array
+    {
+        return [
+            'getBool' => ['getBool', true],
+            'getFloat' => ['getFloat', 1.5],
+            'getInt' => ['getInt', 7],
+            'getString' => ['getString', 'text'],
+        ];
+    }
+
     private function assertDeepEquals($expectedData, $dataWithWrappers)
     {
         $this->assertEquals($expectedData, $this->unwrap($dataWithWrappers));
